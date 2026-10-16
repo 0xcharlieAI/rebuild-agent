@@ -1,0 +1,33 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Packaging and build output
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Local environment and tooling files
+.env
+.env.*
+!.env.example
+.coverage
+htmlcov/
+.tox/
+.nox/
+.rebuild-agent/
+
+# Operating-system files
+.DS_Store
+Thumbs.db

@@ -1,0 +1,2 @@
+# rebuild-agent currently has no runtime dependencies.
+# Development and test dependencies will be pinned in a later phase.
