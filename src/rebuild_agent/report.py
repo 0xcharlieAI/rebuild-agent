@@ -111,7 +111,7 @@ _SECRET_PATTERNS = (
 # Flag machine-specific absolute paths, while allowing normal container paths
 # such as /app and /var/lib in a Dockerfile.
 _ABSOLUTE_PATH = re.compile(
-    r"(?i)(?:" + "/" + "home/|" + "/" + "users/|[A-Za-z]:[\\/])"
+    r"(?i)(?:" + "/" + "home/|" + "/" + "users/|(?<![A-Za-z])[A-Za-z]:[\\/])"
 )
 
 
@@ -129,7 +129,9 @@ def _scan_files(root: Path, patterns: re.Pattern[str] | Sequence[re.Pattern[str]
     matches: list[str] = []
     ignored = {".git", ".venv", "__pycache__", ".pytest_cache", ".rebuild-agent"}
     for path in root.rglob("*"):
-        if not path.is_file() or ignored.intersection(path.relative_to(root).parts):
+        if not path.is_file() or ignored.intersection(path.relative_to(root).parts) or any(
+            part.endswith(".egg-info") for part in path.relative_to(root).parts
+        ):
             continue
         try:
             text = path.read_text(encoding="utf-8", errors="replace")
