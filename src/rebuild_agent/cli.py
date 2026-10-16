@@ -118,6 +118,7 @@ def main() -> None:
     report.add_argument("--format", choices=("markdown", "json"), default="markdown")
     report.add_argument("--image", default="rebuild-agent-verification", help="Docker image tag used for verification")
     report.add_argument("--reuse-image", action="store_true", help="reuse an already built image instead of rebuilding it")
+    report.add_argument("--fail-under", type=int, default=0, help="exit with status 1 when the score is below N")
     args = parser.parse_args()
     if args.command == "analyze":
         project_root = args.path.resolve()
@@ -131,6 +132,8 @@ def main() -> None:
             parser.error(f"project path is not a directory: {args.path}")
         result = build_report(project_root, image=args.image, reuse_image=args.reuse_image)
         print(format_json(result) if args.format == "json" else format_markdown(result), end="")
+        if result.passed < args.fail_under:
+            raise SystemExit(1)
         return
     parser.print_help()
 

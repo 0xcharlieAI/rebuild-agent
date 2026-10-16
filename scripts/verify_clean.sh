@@ -32,6 +32,6 @@ printf '%s\n' '==> Running the test command in the container'
 docker run --rm --entrypoint uv "$IMAGE" run pytest
 
 printf '%s\n' '==> Running the report from the host'
-uv run --project "$REPOSITORY_ROOT" rebuild-agent report "$CLONE_DIR" --format markdown --image "$IMAGE" --reuse-image
+uv run --project "$REPOSITORY_ROOT" rebuild-agent report "$CLONE_DIR" --format markdown --image "$IMAGE" --reuse-image --fail-under 8
 
 printf '%s\n' '==> Clean-machine verification passed'
