@@ -75,6 +75,11 @@ class Fixer:
     @contextmanager
     def temporary_copy(self, patches: Sequence[Path | str] = ()) -> Iterator[Path]:
         """Yield a patched temporary project and remove it on exit."""
+        if shutil.which("patch") is None:
+            raise PatchGenerationError(
+                "The 'patch' command is required but was not found. "
+                "Install it (e.g., apt install patch or pacman -S patch)."
+            )
         with tempfile.TemporaryDirectory(prefix="rebuild-agent-") as directory:
             copy = Path(directory) / self.project_root.name
             shutil.copytree(self.project_root, copy, ignore=shutil.ignore_patterns(".git", ".venv", "__pycache__"))

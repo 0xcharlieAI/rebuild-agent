@@ -38,6 +38,21 @@ def test_fixer_rejects_non_patch_response(tmp_path: Path) -> None:
         Fixer(project, FakeLLM("No changes needed")).generate_patches(["Dockerfile"])
 
 
+def test_fixer_temporary_copy_fails_clearly_without_patch_binary(tmp_path: Path) -> None:
+    project = tmp_path / "project"
+    project.mkdir()
+    fixer = Fixer(project, FakeLLM("unused"), tmp_path / "patches")
+    with patch("rebuild_agent.fixer.shutil.which", return_value=None):
+        try:
+            with fixer.temporary_copy([]):
+                pass
+        except PatchGenerationError as exc:
+            assert "patch" in str(exc).lower()
+            assert "apt install patch" in str(exc) or "pacman -S patch" in str(exc)
+        else:
+            raise AssertionError("expected PatchGenerationError when patch binary is missing")
+
+
 def test_verifier_reports_missing_docker_without_running_project(tmp_path: Path) -> None:
     with patch("rebuild_agent.verifier.shutil.which", return_value=None), patch("rebuild_agent.verifier.subprocess.run") as run:
         result = Verifier(tmp_path).verify(["pytest"])
