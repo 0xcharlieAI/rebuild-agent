@@ -8,6 +8,10 @@ COPY pyproject.toml uv.lock README.md ./
 COPY src ./src
 COPY tests ./tests
 
+RUN apt-get update \
+        && apt-get install -y --no-install-recommends patch \
+        && rm -rf /var/lib/apt/lists/*
+
 RUN uv sync --frozen --dev
 
 ENV PATH="/app/.venv/bin:$PATH"
