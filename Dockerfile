@@ -1,0 +1,16 @@
+FROM python:3.12.15-slim
+
+COPY --from=ghcr.io/astral-sh/uv:0.13.0 /uv /uvx /bin/
+
+WORKDIR /app
+
+COPY pyproject.toml uv.lock README.md ./
+COPY src ./src
+COPY tests ./tests
+
+RUN uv sync --frozen --dev
+
+ENV PATH="/app/.venv/bin:$PATH"
+
+ENTRYPOINT ["rebuild-agent"]
+CMD ["--help"]
