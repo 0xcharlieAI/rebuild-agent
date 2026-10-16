@@ -73,8 +73,13 @@ application from `uv.lock` with `uv sync --frozen --dev`.
 
 Run the clean-machine verification script from the repository root. It clones
 the repository into a temporary directory, builds the Docker image without
-cache, runs the test command in the container, and runs the report there:
+cache, runs the test command in the container, and then generates the report
+from the host against the temporary clone (so it sees its `.git` and can use
+Docker). The report reuses the already built image and fails unless the score
+is 8/8:
 
 ```sh
 bash scripts/verify_clean.sh
 ```
+
+This workflow requires git and Docker on the host machine.
