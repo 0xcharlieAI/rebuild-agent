@@ -11,6 +11,11 @@ verify fixes with an AI agent.
 - Linux or another system capable of running Python 3.12.
 - [uv](https://docs.astral.sh/uv/) for Python environments and dependencies.
 - Docker, only when using the Docker workflow.
+- The `patch` system command, required to trial patches outside Docker:
+    - Debian/Ubuntu: `sudo apt install patch`
+    - Arch Linux: `sudo pacman -S patch`
+
+  The Docker image already includes `patch`.
 
 The repository pins Python to 3.12 in `.python-version` and constrains the
 package to Python 3.12 in `pyproject.toml`.
