@@ -157,8 +157,10 @@ def _test_commands(root: Path, checks: Sequence[CheckResult]) -> tuple[str, ...]
 
 def build_report(
     project_root: Path | str,
-    verifier_factory: Callable[[Path], Verifier] = Verifier,
+    verifier_factory: Callable[[Path], Verifier] | None = None,
     fixed_items: Sequence[str] = (),
+    image: str = "rebuild-agent-verification",
+    reuse_image: bool = False,
 ) -> Report:
     """Inspect a project and verify its Docker build/test command in Docker."""
     root = Path(project_root).resolve()
@@ -171,7 +173,11 @@ def build_report(
 
     verification: VerificationResult | None = None
     if by_name.get("dockerfile", CheckResult("dockerfile", False)).present:
-        verification = verifier_factory(root).verify(_test_commands(root, checks))
+        if verifier_factory is None:
+            verifier = Verifier(root, image=image, skip_build=reuse_image)
+        else:
+            verifier = verifier_factory(root)
+        verification = verifier.verify(_test_commands(root, checks))
     docker_ok = verification is not None and verification.available and verification.passed
     test_ok = docker_ok
     docker_evidence = ("Docker build and test verification",) if docker_ok else ((verification.error,) if verification and verification.error else ())

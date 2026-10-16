@@ -4,12 +4,12 @@ COPY --from=ghcr.io/astral-sh/uv:0.13.0 /uv /uvx /bin/
 
 WORKDIR /app
 
-COPY pyproject.toml uv.lock README.md ./
+COPY pyproject.toml uv.lock README.md Makefile ./
 COPY src ./src
 COPY tests ./tests
 
 RUN apt-get update \
-        && apt-get install -y --no-install-recommends patch \
+        && apt-get install -y --no-install-recommends patch make \
         && rm -rf /var/lib/apt/lists/*
 
 RUN uv sync --frozen --dev

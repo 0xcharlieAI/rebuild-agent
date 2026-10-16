@@ -116,6 +116,8 @@ def main() -> None:
     report = subparsers.add_parser("report", help="report reproducibility checklist status")
     report.add_argument("path", type=Path, help="project directory to report")
     report.add_argument("--format", choices=("markdown", "json"), default="markdown")
+    report.add_argument("--image", default="rebuild-agent-verification", help="Docker image tag used for verification")
+    report.add_argument("--reuse-image", action="store_true", help="reuse an already built image instead of rebuilding it")
     args = parser.parse_args()
     if args.command == "analyze":
         project_root = args.path.resolve()
@@ -127,7 +129,7 @@ def main() -> None:
         project_root = args.path.resolve()
         if not project_root.is_dir():
             parser.error(f"project path is not a directory: {args.path}")
-        result = build_report(project_root)
+        result = build_report(project_root, image=args.image, reuse_image=args.reuse_image)
         print(format_json(result) if args.format == "json" else format_markdown(result), end="")
         return
     parser.print_help()

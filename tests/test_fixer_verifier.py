@@ -71,3 +71,14 @@ def test_verifier_constructs_docker_only_commands(tmp_path: Path) -> None:
     assert result.passed
     assert all(call.args[0][0] == "docker" for call in run.call_args_list)
     assert "make test" in run.call_args_list[1].args[0]
+
+
+def test_verifier_reuse_image_skips_build(tmp_path: Path) -> None:
+    check = __import__("subprocess").CompletedProcess([], 0, "ok", "")
+    with patch("rebuild_agent.verifier.shutil.which", return_value="/usr/bin/docker"), patch(
+        "rebuild_agent.verifier.subprocess.run", return_value=check
+    ) as run:
+        result = Verifier(tmp_path, image="already-built:1", skip_build=True).verify(["make test"])
+    assert result.passed
+    assert run.call_count == 1
+    assert "already-built:1" in run.call_args.args[0]
